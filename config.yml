@@ -1,0 +1,26 @@
+query:
+  entity: sample
+  actions:
+    - subset:
+        values:
+            - VAR15966-20
+            - BQC10336.VAR09082-20
+        regexps:
+            - BQC10.*-20
+    - sample:
+        - head: 10
+    - select:
+        values:
+          - manyStrings
+          - manyFiles
+        regexps:
+          # R1 & R2
+          - R.
+    - localize:
+        invert: True
+        values:
+          - transcriptom_bam
+        regexps:
+          - .*bai
+
+
