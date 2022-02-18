@@ -1,11 +1,12 @@
 import os
 from re import Pattern
-
+from tqdm.std import tqdm
 import firecloud.api as fapi
 import yaml
 import json
 from pprint import pprint
 from constants import *
+from pathlib import Path
 
 from google.cloud import storage
 
@@ -106,12 +107,18 @@ def process_write(write, data):
     target = write[OUTPUT]
     with open(target, 'wt') as file:
         print(f"writing {len(data)} rows to {target}.")
-        file.write(json.dumps(data,indent=4))
+        file.write(json.dumps(data, indent=4))
     return data
 
 
 def localize_blob(blob, path):
     print(f"going to write blob to {path}")
+    Path(os.path.dirname(path)).mkdir(parents=True, exist_ok=True)
+
+    with open(path, 'wb') as f:
+        with tqdm.wrapattr(f, "write", total=blob.size) as file_obj:
+            # blob.download_to_file is deprecated
+            blob.download_to_file(file_obj)
     return blob.crc32c
 
 
