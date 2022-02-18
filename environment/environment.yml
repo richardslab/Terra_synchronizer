@@ -12,5 +12,5 @@ dependencies:
   - python=3.6
   - bioconda::tabix==1.11
   - ghostscript==9.54.0
-
+  - conda-forge::gsutil==5.6
 

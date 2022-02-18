@@ -1,26 +1,30 @@
-query:
+- action: query
+  namespace: brent-billing-project
+  workspace: covid_RNA_qtl_v2
   entity: sample
-  actions:
-    - subset:
-        values:
-            - VAR15966-20
-            - BQC10336.VAR09082-20
-        regexps:
-            - BQC10.*-20
-    - sample:
-        - head: 10
-    - select:
-        values:
-          - manyStrings
-          - manyFiles
-        regexps:
-          # R1 & R2
-          - R.
-    - localize:
-        invert: True
-        values:
-          - transcriptom_bam
-        regexps:
-          - .*bai
+
+- action: subset
+  name: select a few samples by value and regular-expression
+  values:
+      - VAR15966-20
+      - BQC10336.VAR09082-20
+  regexps:
+      - BQC100.*-20
+- action: sample
+  name: take 10 rows from the top
+  head: 10
+- action: select
+  name: choose some columns by value and regular-expression
+  values:
+    - blacklisted_Q
+  regexps:
+    - R.
+- action: localize
+  name: localize things that look like gs:// files
+  hash: crc32
+  directory: data_mirror
+- action: write
+  name:
+  output: mirror.json
 
 
