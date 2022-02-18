@@ -18,13 +18,13 @@
   values:
     - blacklisted_Q
   regexps:
-    - R.
+    - .*index
 - action: localize
   name: localize things that look like gs:// files
   hash: crc32
   directory: data_mirror
 - action: write
-  name:
+  name: write data to a local file
   output: mirror.json
 
 

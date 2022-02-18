@@ -3,7 +3,7 @@
 ## run post-conda steps
 BASEDIR="$(dirname "$0")"
 
-ENV="analysis"
+ENV="terra_sync"
 
 echo BASEDIR="$BASEDIR"
 echo RUNNING post-conda steps
