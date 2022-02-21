@@ -9,6 +9,7 @@ from constants import *
 from pathlib import Path
 
 from google.cloud import storage
+import google.auth
 
 
 def transpose_double_dict(double_dictionary: dict[str, dict]):
@@ -145,7 +146,7 @@ def localize_possible_uri(client, datum, key, value, local_path):
 
 def process_localize(localize, data: list[dict]):
     local_path = localize[DIRECTORY]
-    client = storage.Client(project="terra-193f540e")
+    client = storage.Client()
 
     new_attributes = [
         {key: localize_possible_uri(client, datum, key, value, local_path) for key, value in datum[ATTRIBUTES].items()}
@@ -185,8 +186,12 @@ def process_config(config_):
     pprint(data)
 
 
-# Press the green button in the gutter to run the script.
 if __name__ == '__main__':
+    _, project = google.auth.default()
+    if project == "":
+        raise Exception("you really need a default (google) project. If you cannot set one up with `gcloud auth "
+                        "application-default login` please have the environment variable GOOGLE_CLOUD_PROJECT set to "
+                        "your project.")
     config = get_config("config.yml")
 
     process_config(config)
