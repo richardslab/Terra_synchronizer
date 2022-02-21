@@ -7,3 +7,5 @@ dependencies:
   - pip:
       - tqdm
       - google-cloud-storage
+      - firecloud
+      - yaml

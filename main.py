@@ -65,6 +65,9 @@ def process_query(query, data):
 
 def process_subset(subset, data: list):
     pprint(subset)
+    values=subset[VALUES] if VALUES in subset else None
+    regexps=subset[REGULAR_EXPRESSIONS] if REGULAR_EXPRESSIONS in subset else None
+
     filter_ = NameFilter(values=subset[VALUES], regexps=subset[REGULAR_EXPRESSIONS])
     data = [datum for datum in data if filter_.filter(datum[NAME])]
     print(f"Found {len(data)} rows.")
