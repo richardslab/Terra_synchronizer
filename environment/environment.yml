@@ -2,10 +2,11 @@
 channels:
   - conda-forge
 dependencies:
-  - python=3.9.7
+  - python=>3.8
   - conda-forge::gsutil==5.6
+  - conda-forge::google-cloud-sdk
   - pip:
       - tqdm
       - google-cloud-storage
       - firecloud
-      - yaml
+      - PyYAML

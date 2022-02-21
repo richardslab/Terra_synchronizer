@@ -18,7 +18,7 @@ conda create -y -n "${ENV}"  || echo "It seem that environment ${ENV} is already
 set -ex
 
 mamba env update -n "${ENV}" -q \
-	--file "$BASEDIR"/environment.yml 
+	--file "$BASEDIR"/../environment/environment.yml
 
 echo CREATED the environment "${ENV}"
 
