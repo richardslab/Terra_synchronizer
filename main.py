@@ -97,7 +97,10 @@ def filter_attributes(datum: dict, filter_):
 def process_select(select, data):
     pprint(select)
 
-    filter_ = NameFilter(values=select[VALUES], regexps=select[REGULAR_EXPRESSIONS])
+    values = select[VALUES] if VALUES in select else []
+    regexps = select[REGULAR_EXPRESSIONS] if REGULAR_EXPRESSIONS in select else []
+
+    filter_ = NameFilter(values=values, regexps=regexps)
 
     data = [filter_attributes(datum, filter_.filter) for datum in data]
     print(f"Found {len(data)} rows.")
