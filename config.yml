@@ -2,7 +2,6 @@
   namespace: brent-billing-project
   workspace: covid_RNA_qtl_v2
   entity: sample
-
 - action: subset
   name: select a few samples by value and regular-expression
   values:

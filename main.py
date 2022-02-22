@@ -1,4 +1,4 @@
-import os
+import base64
 from re import Pattern
 from tqdm.std import tqdm
 import firecloud.api as fapi
@@ -7,9 +7,12 @@ import json
 from pprint import pprint
 from constants import *
 from pathlib import Path
+import os
 
 from google.cloud import storage
-import google.auth
+import google
+import google_crc32c
+
 
 
 def transpose_double_dict(double_dictionary: dict[str, dict]):
@@ -118,15 +121,35 @@ def process_write(write, data):
     return data
 
 
-def localize_blob(blob, path):
-    print(f"going to write blob to {path}")
+def get_google_crc32(path):
+    crc_read = google_crc32c.Checksum()
+    with open(path, "rb") as file:
+        f_crc = crc_read.consume(stream=file, chunksize=CRC_CHUNCKSIZE)
+        for _ in f_crc:
+            pass
+    return base64.b64encode(crc_read.digest()).decode("utf-8")
+
+
+def possibly_localize_blob(blob, path):
+    if os.path.isfile(path) and os.path.exists(path):
+        print(f"checking crc for {path}")
+        crc32_string = get_google_crc32(path)
+        if crc32_string == blob.crc32c:
+            print(f"Not downloading since crc32 values match.")
+            return crc32_string
+        else:
+            print(f"crc32 mismatch ({crc32_string} != {blob.crc32c})")
+
+    print(f"Going to write blob to {path}")
     Path(os.path.dirname(path)).mkdir(parents=True, exist_ok=True)
 
     with open(path, 'wb') as f:
         with tqdm.wrapattr(f, "write", total=blob.size) as file_obj:
-            # blob.download_to_file is deprecated
             blob.download_to_file(file_obj)
-    return blob.crc32c
+    crc32_string = get_google_crc32(path)
+    if crc32_string != blob.crc32c:
+        raise Exception(f"file written crc {crc32_string} doesn't match blob's {blob.crc32c}")
+    return crc32_string
 
 
 def localize_possible_uri(client, datum, key, value, local_path):
@@ -139,7 +162,7 @@ def localize_possible_uri(client, datum, key, value, local_path):
 
         print(f"found blob {blob.name} in bucket {blob.bucket.name} with crc32 = '{blob.crc32c}'")
         local_path = os.path.join(os.path.join(local_path, datum[NAME], key), os.path.basename(blob.name))
-        crc32 = localize_blob(blob, local_path)
+        crc32 = possibly_localize_blob(blob, local_path)
         assert crc32 == blob.crc32c
         return {CRC32: crc32, LOCAL_PATH: local_path}
 
