@@ -1,9 +1,10 @@
 import json
 from pprint import pprint
 from google.cloud import storage
-from TerraSync.NameFilter import NameFilter
+from NameFilter import NameFilter
 from constants import *
 import firecloud.api as fapi
+from typing import List
 
 from utils import filter_attributes, localize_possible_uri, transpose_double_dict
 
@@ -20,7 +21,7 @@ def process_query(query, data):
     return data
 
 
-def process_subset(subset, data: list):
+def process_subset(subset, data: List[dict]):
     pprint(subset)
     values = subset[VALUES] if VALUES in subset else []
     regexps = subset[REGULAR_EXPRESSIONS] if REGULAR_EXPRESSIONS in subset else []
@@ -67,7 +68,7 @@ def process_write(write, data):
     return data
 
 
-def process_localize(localize, data: list[dict]):
+def process_localize(localize, data: List[dict]):
     local_path = localize[DIRECTORY]
     client = storage.Client()
 

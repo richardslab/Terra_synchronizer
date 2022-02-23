@@ -8,9 +8,10 @@ import yaml
 from tqdm.auto import tqdm
 
 from constants import *
+from typing import Dict
 
 
-def transpose_double_dict(double_dictionary: dict[str, dict]):
+def transpose_double_dict(double_dictionary: Dict[str,Dict]):
     temp = {innerKey: {k: double_dictionary[k][innerKey] for k in double_dictionary if innerKey in double_dictionary[k]}
             for
             outerKey, outerDict in double_dictionary.items() for
