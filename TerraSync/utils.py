@@ -72,7 +72,8 @@ def localize_possible_uri(client, datum, key, value, local_path):
         except Exception:
             return None
         blob = client.get_bucket(bucket).get_blob(blob)
-
+        if not blob:
+            return None
         print(f"found blob {blob.name} in bucket {blob.bucket.name} with crc32 = '{blob.crc32c}'")
         local_path = os.path.join(os.path.join(local_path, datum[NAME], key), os.path.basename(blob.name))
         crc32 = possibly_localize_blob(blob, local_path)
