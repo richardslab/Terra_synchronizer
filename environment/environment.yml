@@ -4,8 +4,10 @@ channels:
 dependencies:
   - python=>3.8
   - conda-forge::google-cloud-sdk
+  - pip==19.3.1
   - pip:
       - tqdm
       - google-cloud-storage
       - firecloud
       - PyYAML
+      - defopt
