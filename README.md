@@ -76,10 +76,18 @@ Will "sample" the first rows from the data according to a parameter:
 ```
 ### localize
 Download attributes that "look like" gcs objects (i.e. start with "gs://")
-also adds simple checksum (crc32) and the local path to the downloaded path to the data
+also adds simple checksum (crc32) and the local path to the downloaded path to the data. 
+Prior to downloading, if the local file exists, the crc of the local file will be compared 
+to that of the remote file and if they are the same, localization will not occur. 
 ```yaml
 - action: localize
-  name: localize things that look like gs:// files
+  name: localize things that look like gs:// files. 
+  comment: |
+    "map" enables an attribute to be localized to a subdirectory not specified by it's name. 
+    This can come in handy when wanting to localize an index to the same subdir as a main 
+    file (bam, vcf, reference, etc.)
+  map:
+    attribute_index:attr_main
   directory: path-to-top-of-local-data
 ```
 
