@@ -1,4 +1,5 @@
 import json
+import os
 from pprint import pprint
 from google.cloud import storage
 from NameFilter import NameFilter
@@ -69,11 +70,19 @@ def process_write(write, data):
 
 
 def process_localize(localize, data: List[dict]):
-    local_path = localize[DIRECTORY]
+    attributes = {k for datum in data for k in datum[ATTRIBUTES]}
+
+    attribute_map = {k: k for k in attributes}
+    if MAP in localize:
+        print(f"The following attributes will be localized to different paths: {localize[MAP]}")
+        attribute_map.update(localize[MAP])
+
+    local_paths = {k: os.path.join(localize[DIRECTORY], attribute_map[k]) for k in attributes}
+
     client = storage.Client()
 
     new_attributes = [
-        {key: localize_possible_uri(client, datum, key, value, local_path) for key, value in datum[ATTRIBUTES].items()}
+        {key: localize_possible_uri(client, value, local_paths[key]) for key, value in datum[ATTRIBUTES].items()}
         for
         datum in data]
 
@@ -82,7 +91,7 @@ def process_localize(localize, data: List[dict]):
                            new_attributes]
 
     data_and_attributes = zip(data, filtered_attributes)
-    data = [datum | transpose_double_dict(new_attr) for datum, new_attr in data_and_attributes]
+    data = [{**datum, **transpose_double_dict(new_attr)} for datum, new_attr in data_and_attributes]
 
     return data
 
@@ -108,4 +117,3 @@ def process_config(config_):
         else:
             raise Exception("Don't know how to deal with action: %s" % action[ACTION])
     pprint(data)
-

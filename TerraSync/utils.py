@@ -6,12 +6,13 @@ from pprint import pprint
 import google_crc32c
 import yaml
 from tqdm.auto import tqdm
+from sh import sed
 
 from constants import *
 from typing import Dict
 
 
-def transpose_double_dict(double_dictionary: Dict[str,Dict]):
+def transpose_double_dict(double_dictionary: Dict[str, Dict]):
     temp = {innerKey: {k: double_dictionary[k][innerKey] for k in double_dictionary if innerKey in double_dictionary[k]}
             for
             outerKey, outerDict in double_dictionary.items() for
@@ -65,7 +66,7 @@ def possibly_localize_blob(blob, path):
     return crc32_string
 
 
-def localize_possible_uri(client, datum, key, value, local_path):
+def localize_possible_uri(client, value, local_path):
     if type(value) == str:
         try:
             bucket, blob = split_gs_uri(value)
@@ -74,11 +75,12 @@ def localize_possible_uri(client, datum, key, value, local_path):
         blob = client.get_bucket(bucket).get_blob(blob)
         if not blob:
             return None
+
         print(f"found blob {blob.name} in bucket {blob.bucket.name} with crc32 = '{blob.crc32c}'")
-        local_path = os.path.join(os.path.join(local_path, datum[NAME], key), os.path.basename(blob.name))
-        crc32 = possibly_localize_blob(blob, local_path)
+        object_path = os.path.join(local_path, os.path.basename(blob.name))
+        crc32 = possibly_localize_blob(blob, object_path)
         assert crc32 == blob.crc32c
-        return {CRC32: crc32, LOCAL_PATH: local_path}
+        return {CRC32: crc32, LOCAL_PATH: object_path}
 
 
 def filter_attributes(datum: dict, filter_):

@@ -5,13 +5,14 @@ from actions import process_config
 from utils import *
 
 
-def process_configuration(filename: str = "config.yml"):
-    """
-        Examine a Terra workspace according to the instructions
+def process_configuration(filename: str = "../config.yml"):
+    """ Examine a Terra workspace according to the instructions
         laid out in the provided configuration file
 
-        :param filename: a YAML file containing actions to take with regards to a data table in Terra
-        See README.md for more detail
+        :param filename: a YAML file containing actions to take with regards to a data table in Terra. See README.md for more detail
+
+        :return: None
+
     """
     _, project = google.auth.default()
     if project == "":
