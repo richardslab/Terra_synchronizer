@@ -77,12 +77,10 @@ def process_localize(localize, data: List[dict]):
         print(f"The following attributes will be localized to different paths: {localize[MAP]}")
         attribute_map.update(localize[MAP])
 
-    local_paths = {k: os.path.join(localize[DIRECTORY], attribute_map[k]) for k in attributes}
-
     client = storage.Client()
 
     new_attributes = [
-        {key: localize_possible_uri(client, value, local_paths[key]) for key, value in datum[ATTRIBUTES].items()}
+        {key: localize_possible_uri(client, value, os.path.join(localize[DIRECTORY], datum[NAME], attribute_map[key])) for key, value in datum[ATTRIBUTES].items()}
         for
         datum in data]
 
