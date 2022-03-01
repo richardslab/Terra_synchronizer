@@ -6,7 +6,6 @@ from pprint import pprint
 import google_crc32c
 import yaml
 from tqdm.auto import tqdm
-from sh import sed
 
 from constants import *
 from typing import Dict
