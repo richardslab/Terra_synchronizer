@@ -17,6 +17,8 @@ DIRECTORY = "directory"
 # parts of a localize
 CRC32 = "crc32"
 LOCAL_PATH = "local_path"
+CRC_CHUNCKSIZE = 65536
+MAP = "map"
 
 # parts of the data
 ATTRIBUTES = "attributes"

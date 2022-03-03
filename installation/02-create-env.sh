@@ -2,7 +2,7 @@
 
 BASEDIR="$(dirname "$0")"
 
-ENV="analysis"
+ENV="terra_sync"
 
 # shellcheck source=/dev/null
 set +eu \
@@ -17,8 +17,7 @@ conda create -y -n "${ENV}"  || echo "It seem that environment ${ENV} is already
 
 set -ex
 
-mamba env update -n "${ENV}" -q \
-	--file "$BASEDIR"/../environment/environment.yml
+mamba env update -n "${ENV}" -q --file "$BASEDIR"/../environment/environment.yml
 
 echo CREATED the environment "${ENV}"
 

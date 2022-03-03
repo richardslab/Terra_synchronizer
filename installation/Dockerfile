@@ -31,7 +31,7 @@ COPY scripts/entrypoint.sh  .
 
 ENTRYPOINT ["/app/entrypoint.sh"]
 
-CMD ["Hello project_template user."]
+CMD ["Hello TerraSync user."]
 
 WORKDIR /app/installation
 COPY installation/Dockerfile .

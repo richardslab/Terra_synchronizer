@@ -2,7 +2,6 @@
   namespace: brent-billing-project
   workspace: covid_RNA_qtl_v2
   entity: sample
-
 - action: subset
   name: select a few samples by value and regular-expression
   values:
@@ -22,6 +21,11 @@
 - action: localize
   name: localize things that look like gs:// files
   hash: crc32
+  map:
+    deduped_bam_index: deduped_bam
+    snps_het_vcf_index: snps_het_vcf
+    bam_index: bam_file
+    snps_vcf_index: snps_vcf
   directory: data_mirror
 - action: write
   name: write data to a local file
