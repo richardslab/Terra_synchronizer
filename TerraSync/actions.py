@@ -130,4 +130,6 @@ def process_config(config_):
             data = process_switch[action[ACTION]](action, data)
         else:
             raise Exception("Don't know how to deal with action: %s" % action[ACTION])
+
+    # TODO: convert this to an action.
     pprint(data)

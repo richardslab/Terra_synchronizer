@@ -65,7 +65,7 @@ def possibly_localize_blob(blob, path):
     return crc32_string
 
 
-def localize_possible_uri(client, value, local_path):
+def localize_possible_uri(client, value, local_path, actually_localize):
     if type(value) == str:
         try:
             bucket, blob = split_gs_uri(value)
@@ -78,9 +78,11 @@ def localize_possible_uri(client, value, local_path):
         print(f"found blob {blob.name} in bucket {blob.bucket.name} with crc32 = '{blob.crc32c}'")
         object_path = os.path.join(local_path, os.path.basename(blob.name))
 
-        crc32 = possibly_localize_blob(blob, object_path,)
-        assert crc32 == blob.crc32c
-        return {CRC32: crc32, LOCAL_PATH: object_path}
+        if actually_localize:
+            crc32 = possibly_localize_blob(blob, object_path)
+            assert crc32 == blob.crc32c
+
+        return {CRC32: blob.crc32, LOCAL_PATH: object_path}
 
 
 def filter_attributes(datum: dict, filter_):
