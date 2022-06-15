@@ -8,6 +8,7 @@ import firecloud.api as fapi
 from typing import List
 
 from utils import filter_attributes, localize_possible_uri, transpose_double_dict
+from os.path import exists
 
 
 def process_query(query, data):
@@ -63,6 +64,9 @@ def process_select(select, data):
 
 def process_write(write, data):
     target = write[OUTPUT]
+    if exists(target) and not OVERWRITE in write or not bool(write[OVERWRITE]):
+        raise Exception(f"Output file {target} already exists. Add 'overwrite: True' to the 'localize' action in the "
+                        f"configuration or change the output location.")
     with open(target, 'wt') as file:
         print(f"writing {len(data)} rows to {target}.")
         file.write(json.dumps(data, indent=4))
@@ -79,10 +83,22 @@ def process_localize(localize, data: List[dict]):
 
     client = storage.Client()
 
-    new_attributes = [
-        {key: localize_possible_uri(client, value, os.path.join(localize[DIRECTORY], datum[NAME], attribute_map[key])) for key, value in datum[ATTRIBUTES].items()}
-        for
-        datum in data]
+    if ACTUALLY_LOCALIZE in localize and not bool(localize[ACTUALLY_LOCALIZE]):
+        print("*NOT* actually localizing, as requested.")
+        new_attributes = [
+            {key: {LOCAL_PATH: os.path.join(localize[DIRECTORY], datum[NAME], attribute_map[key])} for
+             key, value in datum[ATTRIBUTES].items()}
+            for
+            datum in data]
+    else:
+        print("*Actually localizing*, as requested.")
+
+        new_attributes = [
+            {key: localize_possible_uri(client, value,
+                                        os.path.join(localize[DIRECTORY], datum[NAME], attribute_map[key])) for
+             key, value in datum[ATTRIBUTES].items()}
+            for
+            datum in data]
 
     # remove Nones
     filtered_attributes = [{key: value for key, value in datum.items() if value is not None} for datum in

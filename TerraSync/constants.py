@@ -1,6 +1,6 @@
 # parts of a workspace
 import re
-
+from enum import Enum, unique, auto
 NAMESPACE = "namespace"
 WORKSPACE = "workspace"
 ENTITY = "entity"
@@ -11,14 +11,19 @@ REGULAR_EXPRESSIONS = "regexps"
 HEAD = "head"
 
 # parts of a write
+
+
 OUTPUT = "output"
 DIRECTORY = "directory"
+OVERWRITE = "overwrite"
 
 # parts of a localize
 CRC32 = "crc32"
 LOCAL_PATH = "local_path"
+ACTUALLY_LOCALIZE = "actually_localize"
 CRC_CHUNCKSIZE = 65536
 MAP = "map"
+
 
 # parts of the data
 ATTRIBUTES = "attributes"
