@@ -19,8 +19,8 @@
   regexps:
     - .*index
 - action: localize
-## default, optional when false, local path is generated, but files are not downloaded
-  actually_localize: True
+## default, optional when False, local path is generated, but files are not downloaded
+  actually_localize: False
   name: localize things that look like gs:// files
   hash: crc32
   map:
@@ -30,8 +30,8 @@
     snps_vcf_index: snps_vcf
   directory: data_mirror
 - action: write
-## default Fail; value can be Fail, Always or Ask
-  overwrite: False
+## default False
+  overwrite: True
   name: write data to a local file
   output: mirror.json
 

@@ -82,7 +82,7 @@ def localize_possible_uri(client, value, local_path, actually_localize):
             crc32 = possibly_localize_blob(blob, object_path)
             assert crc32 == blob.crc32c
 
-        return {CRC32: blob.crc32, LOCAL_PATH: object_path}
+        return {CRC32: blob.crc32c, LOCAL_PATH: object_path}
 
 
 def filter_attributes(datum: dict, filter_):

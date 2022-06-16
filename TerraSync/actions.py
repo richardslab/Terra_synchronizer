@@ -64,7 +64,8 @@ def process_select(select, data):
 
 def process_write(write, data):
     target = write[OUTPUT]
-    if exists(target) and not OVERWRITE in write or not bool(write[OVERWRITE]):
+    overwrite = OVERWRITE in write and bool(write[OVERWRITE])
+    if exists(target) and not overwrite:
         raise Exception(f"Output file {target} already exists. Add 'overwrite: True' to the 'localize' action in the "
                         f"configuration or change the output location.")
     with open(target, 'wt') as file:
@@ -83,22 +84,16 @@ def process_localize(localize, data: List[dict]):
 
     client = storage.Client()
 
-    if ACTUALLY_LOCALIZE in localize and not bool(localize[ACTUALLY_LOCALIZE]):
-        print("*NOT* actually localizing, as requested.")
-        new_attributes = [
-            {key: {LOCAL_PATH: os.path.join(localize[DIRECTORY], datum[NAME], attribute_map[key])} for
-             key, value in datum[ATTRIBUTES].items()}
-            for
-            datum in data]
-    else:
-        print("*Actually localizing*, as requested.")
+    localize_files: bool = ACTUALLY_LOCALIZE not in localize or bool(localize[ACTUALLY_LOCALIZE])
 
-        new_attributes = [
-            {key: localize_possible_uri(client, value,
-                                        os.path.join(localize[DIRECTORY], datum[NAME], attribute_map[key])) for
-             key, value in datum[ATTRIBUTES].items()}
-            for
-            datum in data]
+    new_attributes = [
+        {key: localize_possible_uri(client,
+                                    value,
+                                    os.path.join(localize[DIRECTORY], datum[NAME], attribute_map[key]),
+                                    localize_files) for
+         key, value in datum[ATTRIBUTES].items()}
+        for
+        datum in data]
 
     # remove Nones
     filtered_attributes = [{key: value for key, value in datum.items() if value is not None} for datum in
