@@ -13,6 +13,12 @@ HEAD = "head"
 # parts of a write
 
 
+class OverwriteAction(Enum):
+    REFUSE = auto()
+    AGREE = auto()
+    AUGMENT = auto()
+
+
 OUTPUT = "output"
 DIRECTORY = "directory"
 OVERWRITE = "overwrite"

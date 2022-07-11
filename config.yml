@@ -30,8 +30,8 @@
     snps_vcf_index: snps_vcf
   directory: data_mirror
 - action: write
-## default False
-  overwrite: True
+## default REFUSE
+  overwrite: AGREE
   name: write data to a local file
   output: mirror.json
 

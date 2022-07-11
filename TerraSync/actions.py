@@ -64,10 +64,20 @@ def process_select(select, data):
 
 def process_write(write, data):
     target = write[OUTPUT]
-    overwrite = OVERWRITE in write and bool(write[OVERWRITE])
-    if exists(target) and not overwrite:
-        raise Exception(f"Output file {target} already exists. Add 'overwrite: True' to the 'localize' action in the "
-                        f"configuration or change the output location.")
+    overwrite = OverwriteAction(write[OVERWRITE]) if OVERWRITE in write else OverwriteAction.REFUSE
+    if exists(target):
+        if overwrite == OverwriteAction.REFUSE:
+            raise Exception(f"Output file {target} already exists, but 'overwrite' is either missing or set to 'REFUSE'."
+                            f"Set value to 'AGREE' or 'AUGMENT' to overwrite or augment the existing file, "
+                            f"or change the output location.")
+        else:
+            try:
+                existing = json.load(target)  # type: dict
+                existing.update(data)
+                data = existing
+            except Exception as e:
+                raise Exception(e, "failed to read existing file as json, or failed to update resulting dictionary "
+                                   "with current data.")
     with open(target, 'wt') as file:
         print(f"writing {len(data)} rows to {target}.")
         file.write(json.dumps(data, indent=4))
