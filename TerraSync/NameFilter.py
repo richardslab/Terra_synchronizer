@@ -6,8 +6,8 @@ class NameFilter:
         self.values = values
         self.regexps = regexps
 
-        self.values_set: set[str] = set(values)
-        self.re_set: set[re.Pattern] = set([re.compile(regexp) for regexp in regexps])
+        self.values_set: set = set(values)
+        self.re_set: set = set([re.compile(regexp) for regexp in regexps])
 
     def filter(self, name):
         if name in self.values_set:

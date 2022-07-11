@@ -11,8 +11,15 @@ from utils import filter_attributes, localize_possible_uri, transpose_double_dic
 from os.path import exists
 
 
-def process_query(query, data):
+def process_query(query, data, validate=False):
     pprint(query)
+    assert NAMESPACE in query and isinstance(query[NAMESPACE], str) and len(query[NAMESPACE]) > 0
+    assert WORKSPACE in query and isinstance(query[WORKSPACE], str) and len(query[WORKSPACE]) > 0
+    assert ENTITY in query and isinstance(query[ENTITY], str) and len(query[ENTITY]) > 0
+
+    if validate:
+        return
+
     if len(data) != 0:
         raise Exception(f"Input data has {len(data)} rows that will be over-written. Cowardly refusing to continue.")
     r = fapi.get_entities(namespace=query[NAMESPACE], workspace=query[WORKSPACE],
@@ -25,6 +32,7 @@ def process_query(query, data):
 
 def process_subset(subset, data: List[dict]):
     pprint(subset)
+
     values = subset[VALUES] if VALUES in subset else []
     regexps = subset[REGULAR_EXPRESSIONS] if REGULAR_EXPRESSIONS in subset else []
 
@@ -64,13 +72,13 @@ def process_select(select, data):
 
 def process_write(write, data):
     target = write[OUTPUT]
-    overwrite = OverwriteAction(write[OVERWRITE]) if OVERWRITE in write else OverwriteAction.REFUSE
+    overwrite = OverwriteAction[write[OVERWRITE]] if OVERWRITE in write else OverwriteAction.REFUSE
     if exists(target):
         if overwrite == OverwriteAction.REFUSE:
             raise Exception(f"Output file {target} already exists, but 'overwrite' is either missing or set to 'REFUSE'."
                             f"Set value to 'AGREE' or 'AUGMENT' to overwrite or augment the existing file, "
                             f"or change the output location.")
-        else:
+        elif overwrite==OverwriteAction.AUGMENT:
             try:
                 existing = json.load(target)  # type: dict
                 existing.update(data)
@@ -78,6 +86,8 @@ def process_write(write, data):
             except Exception as e:
                 raise Exception(e, "failed to read existing file as json, or failed to update resulting dictionary "
                                    "with current data.")
+        else:
+            print(f"overwriting existing file {target} as requested in config file.")
     with open(target, 'wt') as file:
         print(f"writing {len(data)} rows to {target}.")
         file.write(json.dumps(data, indent=4))
