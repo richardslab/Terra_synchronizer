@@ -80,11 +80,11 @@ def process_write(write, data):
                             f"or change the output location.")
         elif overwrite == OverwriteAction.AUGMENT:
             try:
+                print(data)
                 with open(target, 'rt') as fp:
                     existing = json.load(fp)  # type: dict
                     print(existing)
                     existing[0].update(data)
-                print(data)
                 data = existing[0]
             except Exception as e:
                 raise Exception(e, "failed to read existing file as json, or failed to update resulting dictionary "
