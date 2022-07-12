@@ -78,10 +78,11 @@ def process_write(write, data):
             raise Exception(f"Output file {target} already exists, but 'overwrite' is either missing or set to 'REFUSE'."
                             f"Set value to 'AGREE' or 'AUGMENT' to overwrite or augment the existing file, "
                             f"or change the output location.")
-        elif overwrite==OverwriteAction.AUGMENT:
+        elif overwrite == OverwriteAction.AUGMENT:
             try:
-                existing = json.load(target)  # type: dict
-                existing.update(data)
+                with open(target, 'rt') as fp:
+                    existing = json.load(fp)  # type: dict
+                    existing.update(data)
                 data = existing
             except Exception as e:
                 raise Exception(e, "failed to read existing file as json, or failed to update resulting dictionary "
